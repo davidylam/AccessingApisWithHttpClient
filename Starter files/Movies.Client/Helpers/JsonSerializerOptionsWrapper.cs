@@ -4,10 +4,10 @@ namespace Movies.Client.Helpers;
 
 public class JsonSerializerOptionsWrapper
 {
-    public JsonSerializerOptions options { get; }
+    public JsonSerializerOptions Options { get; }
 
     public JsonSerializerOptionsWrapper()
     {
-        options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        Options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
     }
 }

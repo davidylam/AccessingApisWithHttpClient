@@ -20,7 +20,8 @@ public class CRUDSamples : IIntegrationService
     public async Task RunAsync()
     {
         //await GetResourceAsync();
-        await GetResourceThroughHttpRequestMessageAsync();
+        //await GetResourceThroughHttpRequestMessageAsync();
+        await CreateResourceAsync();
     }
 
     public async Task GetResourceAsync()
@@ -42,7 +43,7 @@ public class CRUDSamples : IIntegrationService
         List<Movie>? movies = new();
 
         if (response.Content.Headers.ContentType?.MediaType == "application/json") { 
-            movies = JsonSerializer.Deserialize<List<Movie>>(content, _jsonSerializerOptionsWrapper.options);
+            movies = JsonSerializer.Deserialize<List<Movie>>(content, _jsonSerializerOptionsWrapper.Options);
         
         } else if (response.Content.Headers.ContentType?.MediaType == "application/xml")
         {
@@ -70,8 +71,45 @@ public class CRUDSamples : IIntegrationService
         var content = await response.Content.ReadAsStringAsync();
 
         IEnumerable<Movie>? movies = JsonSerializer.Deserialize<IEnumerable<Movie>>(
-            content, _jsonSerializerOptionsWrapper.options);
+            content, _jsonSerializerOptionsWrapper.Options);
 
         Console.WriteLine(movies);
+    }
+
+    public async Task CreateResourceAsync()
+    {
+        var httpClient = _httpClientFactory.CreateClient("MoviesAPIClient");
+        var movieToCreate = new MovieForCreation()
+        {
+            Title = "Reservoir Dogs",
+            Description = "After a simple jewelry heist goes terribly wrong, the " +
+                "surviving criminals begin to suspect that one of them is a police informant.",
+            DirectorId = Guid.Parse("d28888e9-2ba9-473a-a40f-e38cb54f9b35"),
+            ReleaseDate = new DateTimeOffset(new DateTime(1992, 9, 2)),
+            Genre = "Crime, Drama"
+        };
+
+        var serializedMovieToCreate = JsonSerializer.Serialize(
+            movieToCreate, 
+            _jsonSerializerOptionsWrapper.Options);
+        
+        var request = new HttpRequestMessage(
+            HttpMethod.Post, 
+            "api/movies");
+        request.Headers.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+        request.Content = new StringContent(serializedMovieToCreate);
+        request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+
+        var response = await httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        var createdMovie = JsonSerializer.Deserialize<Movie>(
+            content, 
+            _jsonSerializerOptionsWrapper.Options);
     }
 }
