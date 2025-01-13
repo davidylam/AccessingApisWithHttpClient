@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Movies.API.DbContexts;
 using Movies.API.Services;
+using System.Runtime.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,9 @@ builder.Services.AddControllers(options =>
 {
     // Return a 406 when an unsupported media type was requested
     options.ReturnHttpNotAcceptable = true;
+
+    options.OutputFormatters.Insert(0, new XmlSerializerOutputFormatter());
+    options.InputFormatters.Insert(0, new XmlSerializerInputFormatter(options));
 })
 // Override System.Text.Json with Json.NET
 //.AddNewtonsoftJson(setupAction =>
