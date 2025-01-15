@@ -23,7 +23,11 @@ public class CRUDSamples : IIntegrationService
         //await GetResourceAsync();
         //await GetResourceThroughHttpRequestMessageAsync();
         //await CreateResourceAsync();
-        await UpdateResourceAsync();
+        //await UpdateResourceAsync();
+        //await DeleteResourceAsync();
+        //await PostResourceShortcutAsync();
+        //await PutResourceShortcut();
+        await DeleteResourceShortcut();
     }
 
     public async Task GetResourceAsync()
